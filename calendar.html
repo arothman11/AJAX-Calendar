@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Module 5 Group</title>
+    <script  src="calendarfunctions.js"></script>
+    <!-- <link rel="stylesheet" href="stylesheet.css"> -->
+</head>
+<body>
+    <!-- login button that redirects to login page -->
+    <form action="login_ajax.php">
+        <button name="login_btn" id="login_btn">Login Here</button>
+    </form>
+
+    <button name="next_month_btn" id="next_month_btn">Next Month</button>
+
+
+    <table id="main-cal">
+        <tr>
+            <th>Sun</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+        </tr>
+    </table>
+
+    <script>
+        // For our purposes, we can keep the current month in a variable in the global scope
+        var currentMonth = new Month(2021, 2); // March 2021
+        console.log(currentMonth);
+        var cal = document.getElementById("main-cal");
+
+        var weeks = currentMonth.getWeeks();
+        for(var i=0; i<weeks.length; i++){
+            var tr = document.createElement("tr");
+            for(var j=0; j<weeks[i].getDates().length; j++){
+                var td = document.createElement("td");
+                td.innerHTML = weeks[i].getDates()[j].getDate();
+                tr.appendChild(td);
+            }
+            cal.appendChild(tr);
+        }
+
+        // Change the month when the "next" button is pressed
+            document.getElementById("next_month_btn").addEventListener("click", function(event){
+            currentMonth = currentMonth.nextMonth(); // Previous month would be currentMonth.prevMonth()
+            updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
+            // alert("The new month is "+currentMonth.month+" "+currentMonth.year);
+        }, false);
+
+
+        // This updateCalendar() function only alerts the dates in the currently specified month.  You need to write
+        // it to modify the DOM (optionally using jQuery) to display the days and weeks in the current month.
+        function updateCalendar(){
+            var weeks = currentMonth.getWeeks();
+            console.log(weeks);
+            
+            for(var w in weeks){
+                var days = weeks[w].getDates();
+                // days contains normal JavaScript Date objects.
+                
+                // alert("Week starting on "+days[0]);
+                console.log(days);
+                
+                // for(var d in days){
+                //     // You can see console.log() output in your JavaScript debugging tool, like Firebug,
+                //     // WebWit Inspector, or Dragonfly.
+                //     console.log(days[d].toISOString());
+                // }
+            }
+        }
+    </script>
+</body>
+</html>
