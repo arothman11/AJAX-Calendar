@@ -6,11 +6,14 @@
     <!-- <link rel="stylesheet" href="stylesheet.css"> -->
 </head>
 <body>
+
+    <h1 id="month_year"></h1>
     <!-- login button that redirects to login page -->
     <form action="login_ajax.php">
         <button name="login_btn" id="login_btn">Login Here</button>
     </form>
 
+    <button name="prev_month_btn" id="prev_month_btn">Previous Month</button>
     <button name="next_month_btn" id="next_month_btn">Next Month</button>
 
 
@@ -32,6 +35,8 @@
         console.log(currentMonth);
         var cal = document.getElementById("main-cal");
 
+        document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
+
         var weeks = currentMonth.getWeeks();
         for(var i=0; i<weeks.length; i++){
             var tr = document.createElement("tr");
@@ -45,30 +50,77 @@
 
         // Change the month when the "next" button is pressed
             document.getElementById("next_month_btn").addEventListener("click", function(event){
-            currentMonth = currentMonth.nextMonth(); // Previous month would be currentMonth.prevMonth()
-            updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
-            // alert("The new month is "+currentMonth.month+" "+currentMonth.year);
-        }, false);
+                currentMonth = currentMonth.nextMonth(); // Previous month would be currentMonth.prevMonth()
+                updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
+            }, false);
+
+            // Change the month when the "previous" button is pressed
+            document.getElementById("prev_month_btn").addEventListener("click", function(event){
+                currentMonth = currentMonth.prevMonth(); // Previous month would be currentMonth.prevMonth()
+                updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
+            }, false);
+
+
 
 
         // This updateCalendar() function only alerts the dates in the currently specified month.  You need to write
         // it to modify the DOM (optionally using jQuery) to display the days and weeks in the current month.
         function updateCalendar(){
+            document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
+            var cal = document.getElementById("main-cal");
+            for(var i=cal.childNodes.length-1; i>=2; i--){
+                cal.removeChild(cal.childNodes[i]);
+            }
+
             var weeks = currentMonth.getWeeks();
-            console.log(weeks);
+            for(var i=0; i<weeks.length; i++){
+                var tr = document.createElement("tr");
+                for(var j=0; j<weeks[i].getDates().length; j++){
+                    var td = document.createElement("td");
+                    td.innerHTML = weeks[i].getDates()[j].getDate();
+                    tr.appendChild(td);
+                }
+                cal.appendChild(tr);
+            }
             
-            for(var w in weeks){
-                var days = weeks[w].getDates();
-                // days contains normal JavaScript Date objects.
-                
-                // alert("Week starting on "+days[0]);
-                console.log(days);
-                
-                // for(var d in days){
-                //     // You can see console.log() output in your JavaScript debugging tool, like Firebug,
-                //     // WebWit Inspector, or Dragonfly.
-                //     console.log(days[d].toISOString());
-                // }
+        }
+
+        function monthName(month){
+            if(currentMonth.month == 0){
+                return "January";
+            }
+            else if(currentMonth.month == 1){
+                return "February";
+            }
+            else if(currentMonth.month == 2){
+                return "March";
+            }
+            else if(currentMonth.month == 3){
+                return "April";
+            }
+            else if(currentMonth.month == 4){
+                return "May";
+            }
+            else if(currentMonth.month == 5){
+                return "June";
+            }
+            else if(currentMonth.month == 6){
+                return "July";
+            }
+            else if(currentMonth.month == 7){
+                return "August";
+            }
+            else if(currentMonth.month == 8){
+                return "September";
+            }
+            else if(currentMonth.month == 9){
+                return "October";
+            }
+            else if(currentMonth.month == 10){
+                return "November";
+            }
+            else if(currentMonth.month == 11){
+                return "December";
             }
         }
     </script>
