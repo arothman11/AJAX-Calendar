@@ -85,8 +85,14 @@ function checkSession() {
         })
         .then(response => response.json())
         .then(data => {
-            loggedIn(data.username);
-            token = data.token;
+            if(data.username == ""){
+                loggedOut();
+            }
+            else{
+                loggedIn(data.username);
+                token = data.token;
+            }
+            
         })
         .catch(err => console.error(err));
 
@@ -97,9 +103,13 @@ function checkSession() {
 function logoutAjax(event){
     fetch("logout_ajax.php", {
         method: 'POST',
+        // body: JSON.stringify(data),
         headers: { 'content-type': 'application/json' }
     })
-    loggedOut();
+    .then(data => {
+        loggedOut();
+    })
+    .catch(err => console.error(err));
 }
 
 

@@ -26,10 +26,10 @@
         $username = $_SESSION["username"];
     }
     else{
-        echo json_encode(array(
-            "success" => false,
-            "message" => "username session variable is not set"
-        ));
+        // echo json_encode(array(
+        //     "success" => false,
+        //     "message" => "username session variable is not set"
+        // ));
     }
    
     $titles = array();

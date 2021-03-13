@@ -23,11 +23,20 @@
     $json_obj = json_decode($json_str, true);
     
     
-    $user_id = (string)$_SESSION['username'];
-
+    if(isset($_SESSION['username'])) {
+        $user_id = (string)$_SESSION['username'];
         echo json_encode(array(
             "username" => $user_id,
             "token" => $_SESSION['token']
         ));
+    }
+    else{
+        echo json_encode(array(
+            "username" => "",
+            "token" => ""
+        ));
+    }
+
+        
         exit;
 ?>

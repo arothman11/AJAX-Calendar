@@ -53,27 +53,16 @@
 
     <script type="text/javascript" src="ajax.js"></script> 
     <script>
-
-    function displayEvent(){
-        fetch("event_ajax.php", {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                title = data.title;
-                datetime = data.datetime;
-            })
-            .catch(err => console.error(err));
-
-    }
         // For our purposes, we can keep the current month in a variable in the global scope
         var currentMonth = new Month(2021, 2); // March 2021
         console.log(currentMonth);
         var cal = document.getElementById("main-cal");
 
         document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
+        
         var datesarray = [];
+        var timesarray = [];
+        var titlesarray = [];
         fetch("event_ajax.php", {
                     method: 'POST',
                     headers: { 'content-type': 'application/json' }
@@ -89,30 +78,52 @@
                         var t = datetime[i].split(/[- :]/);
                         // Apply each element to the Date function
                         var d = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
-                        datesarray[i] = d;
+                        //https://stackoverflow.com/questions/29042911/how-do-i-split-the-date-and-time-into-two-elements
+                        datesarray[i] = d.toLocaleDateString();
+                        timesarray[i]= d.toLocaleTimeString();
+                        titlesarray[i] = title[i];
                     }
 
                     var weeks = currentMonth.getWeeks();
-                    console.log(datesarray.length);
+                    
+                    console.log(datesarray);
+                    console.log(timesarray);
+                    console.log(titlesarray);
+
                     for(var i=0; i<weeks.length; i++){
                         var tr = document.createElement("tr");
+
                         for(var j=0; j<weeks[i].getDates().length; j++){
                             var td = document.createElement("td");
                             var num = document.createElement("div");
                             num.classList.add("datenum");
-                            //console.log(weeks[i].getDates()[j]);               
-
                             num.innerHTML = weeks[i].getDates()[j].getDate();
                             td.appendChild(num);
+                            
+                            for(var k=0; k<datesarray.length; k++){
+                                if (weeks[i].getDates()[j].toLocaleDateString() == datesarray[k]){
+                                    var event_div = document.createElement("div");
+                                    event_div.classList.add("event_div");
+                                    //TITLE
+                                    var event_title = document.createElement("p");
+                                    event_title.classList.add("event_title");
+                                    event_title.innerHTML = titlesarray[k];
+                                    //TIME
+                                    var event_time = document.createElement("p");
+                                    event_time.classList.add("event_time");
+                                    event_time.innerHTML = timesarray [k];
+
+                                    event_div.appendChild(event_title);
+                                    event_div.appendChild(event_time);
+                                    td.appendChild(event_div);
+                                }
+                            }                        
                             tr.appendChild(td);
                         }
                         cal.appendChild(tr);
                     }
                             })
                 .catch(err => console.error(err));
-
-        
-
         // Change the month when the "next" button is pressed
             document.getElementById("next_month_btn").addEventListener("click", function(event){
                 currentMonth = currentMonth.nextMonth(); // Previous month would be currentMonth.prevMonth()
@@ -136,16 +147,64 @@
                 cal.removeChild(cal.childNodes[i]);
             }
 
-            var weeks = currentMonth.getWeeks();
-            for(var i=0; i<weeks.length; i++){
-                var tr = document.createElement("tr");
-                for(var j=0; j<weeks[i].getDates().length; j++){
-                    var td = document.createElement("td");
-                    td.innerHTML = weeks[i].getDates()[j].getDate();
-                    tr.appendChild(td);
-                }
-                cal.appendChild(tr);
-            }
+            fetch("event_ajax.php", {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    title = data.title;
+                    datetime = data.datetime;
+                    
+                    for (i = 0; i<datetime.length; i++) {
+                        //https://stackoverflow.com/questions/3075577/convert-mysql-datetime-stamp-into-javascripts-date-format
+                         // Split timestamp into [ Y, M, D, h, m, s ]
+                        var t = datetime[i].split(/[- :]/);
+                        // Apply each element to the Date function
+                        var d = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
+                        //https://stackoverflow.com/questions/29042911/how-do-i-split-the-date-and-time-into-two-elements
+                        datesarray[i] = d.toLocaleDateString();
+                        timesarray[i]= d.toLocaleTimeString();
+                        titlesarray[i] = title[i];
+                    }
+
+                    var weeks = currentMonth.getWeeks();
+
+                    for(var i=0; i<weeks.length; i++){
+                        var tr = document.createElement("tr");
+
+                        for(var j=0; j<weeks[i].getDates().length; j++){
+                            var td = document.createElement("td");
+                            var num = document.createElement("div");
+                            num.classList.add("datenum");
+                            num.innerHTML = weeks[i].getDates()[j].getDate();
+                            td.appendChild(num);
+                            
+                            for(var k=0; k<datesarray.length; k++){
+                                if (weeks[i].getDates()[j].toLocaleDateString() == datesarray[k]){
+                                    var event_div = document.createElement("div");
+                                    event_div.classList.add("event_div");
+                                    //TITLE
+                                    var event_title = document.createElement("p");
+                                    event_title.classList.add("event_title");
+                                    event_title.innerHTML = titlesarray[k];
+                                    //TIME
+                                    var event_time = document.createElement("p");
+                                    event_time.classList.add("event_time");
+                                    event_time.innerHTML = timesarray [k];
+
+                                    event_div.appendChild(event_title);
+                                    event_div.appendChild(event_time);
+                                    td.appendChild(event_div);
+                                }
+                            }
+                            tr.appendChild(td);
+                        }
+                        cal.appendChild(tr);
+                    }
+                            })
+                .catch(err => console.error(err));
+
             
         }
 
