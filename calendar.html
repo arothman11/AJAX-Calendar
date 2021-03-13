@@ -7,8 +7,7 @@
 </head>
 
 <body>
-    <h1 id="welcome_user"></h1>
-    <h1 id="month_year"></h1>
+    
 
     <!-- login function -->
     <div id="login">
@@ -26,9 +25,8 @@
 
     <button id="logout_btn">Log Out</button>
 
-
-    <button name="prev_month_btn" id="prev_month_btn">Previous Month</button>
-    <button name="next_month_btn" id="next_month_btn">Next Month</button>
+    <h1 id="welcome_user"></h1>
+    <h1 id="month_year"></h1>
 
     <div id="event-form">
         <h2>Create New Event</h2>
@@ -37,6 +35,13 @@
         <input type="time" id="time" placeholder="Event Time" />
         <button id="submit_event">Create</button>
     </div>
+
+    <div id="navbuttons">
+        <button name="prev_month_btn" id="prev_month_btn">Previous Month</button>
+        <button name="next_month_btn" id="next_month_btn">Next Month</button>
+    </div>
+
+   
 
 
     <table id="main-cal">
@@ -51,7 +56,7 @@
         </tr>
     </table>
 
-    <script type="text/javascript" src="ajax.js"></script> 
+   
     <script>
         // For our purposes, we can keep the current month in a variable in the global scope
         var currentMonth = new Month(2021, 2); // March 2021
@@ -59,7 +64,11 @@
         var cal = document.getElementById("main-cal");
 
         document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
-        
+       
+        for(var i=cal.childNodes.length-1; i>=2; i--){
+                cal.removeChild(cal.childNodes[i]);
+            }
+            
         var datesarray = [];
         var timesarray = [];
         var titlesarray = [];
@@ -141,6 +150,11 @@
         // This updateCalendar() function only alerts the dates in the currently specified month.  You need to write
         // it to modify the DOM (optionally using jQuery) to display the days and weeks in the current month.
         function updateCalendar(){
+
+            datesarray = [];
+            timesarray = [];
+            titlesarray = [];
+
             document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
             var cal = document.getElementById("main-cal");
             for(var i=cal.childNodes.length-1; i>=2; i--){
@@ -249,6 +263,7 @@
 
         
     </script>
+     <script type="text/javascript" src="ajax.js"></script> 
     
 </body>
 </html>

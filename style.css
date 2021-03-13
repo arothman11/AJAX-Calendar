@@ -1,3 +1,24 @@
+#main-cal{
+    width: 90%;
+    margin:auto;
+}
+
+#welcome_user, #month_year{
+    text-align: center;
+}
+
+#navbuttons{
+    text-align: center;
+}
+
+#event-form{
+    text-align: center;
+    border: 1px solid black;
+    padding: 2px;
+    width: 50%;
+    margin: auto;
+}
+
 #logout_btn{
     display: none;
 }

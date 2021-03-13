@@ -72,6 +72,7 @@ function newEventAjax(event){
             document.getElementById("title").value= "";
             document.getElementById("date").value= "";
             document.getElementById("time").value= "";
+            updateCalendar();
         })
         .catch(err => console.error(err));
 }
@@ -119,6 +120,8 @@ function loggedIn(username){
     document.getElementById("register").style.display = "none";
     document.getElementById("logout_btn").style.display = "block";
     document.getElementById("event-form").style.display = "block";
+
+    updateCalendar();
 }
 
 function loggedOut(){
@@ -126,5 +129,8 @@ function loggedOut(){
     document.getElementById("login").style.display = "block";
     document.getElementById("register").style.display = "block";
     document.getElementById("logout_btn").style.display = "none";
+    document.getElementById("event-form").style.display = "none";
+
+    updateCalendar();
 }
 
