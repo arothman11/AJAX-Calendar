@@ -3,18 +3,40 @@
 <head>
     <title>Module 5 Group</title>
     <script  src="calendarfunctions.js"></script>
-    <!-- <link rel="stylesheet" href="stylesheet.css"> -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
 
+<body>
+    <h1 id="welcome_user"></h1>
     <h1 id="month_year"></h1>
-    <!-- login button that redirects to login page -->
-    <form action="login_ajax.php">
-        <button name="login_btn" id="login_btn">Login Here</button>
-    </form>
+
+    <!-- login function -->
+    <div id="login">
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
+        <button id="login_btn">Log In</button>
+    </div>
+    
+    <!-- //button to create a new user -->
+    <div id="register">
+        <input type="text" id="newUsername" placeholder="Username" />
+        <input type="password" id="newPassword" placeholder="Password" />
+        <button id="newuser_btn">Create New Account</button>
+    </div>
+
+    <button id="logout_btn">Log Out</button>
+
 
     <button name="prev_month_btn" id="prev_month_btn">Previous Month</button>
     <button name="next_month_btn" id="next_month_btn">Next Month</button>
+
+    <div id="event-form">
+        <h2>Create New Event</h2>
+        <input type="text" id="title" placeholder="Event Title" />
+        <input type="date" id="date" placeholder="Event Date" />
+        <input type="time" id="time" placeholder="Event Time" />
+        <button id="submit_event">Create</button>
+    </div>
 
 
     <table id="main-cal">
@@ -29,24 +51,67 @@
         </tr>
     </table>
 
+    <script type="text/javascript" src="ajax.js"></script> 
     <script>
+
+    function displayEvent(){
+        fetch("event_ajax.php", {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                title = data.title;
+                datetime = data.datetime;
+            })
+            .catch(err => console.error(err));
+
+    }
         // For our purposes, we can keep the current month in a variable in the global scope
         var currentMonth = new Month(2021, 2); // March 2021
         console.log(currentMonth);
         var cal = document.getElementById("main-cal");
 
         document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
+        var datesarray = [];
+        fetch("event_ajax.php", {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    title = data.title;
+                    datetime = data.datetime;
+                    
+                    for (i = 0; i<datetime.length; i++) {
+                        //https://stackoverflow.com/questions/3075577/convert-mysql-datetime-stamp-into-javascripts-date-format
+                         // Split timestamp into [ Y, M, D, h, m, s ]
+                        var t = datetime[i].split(/[- :]/);
+                        // Apply each element to the Date function
+                        var d = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
+                        datesarray[i] = d;
+                    }
 
-        var weeks = currentMonth.getWeeks();
-        for(var i=0; i<weeks.length; i++){
-            var tr = document.createElement("tr");
-            for(var j=0; j<weeks[i].getDates().length; j++){
-                var td = document.createElement("td");
-                td.innerHTML = weeks[i].getDates()[j].getDate();
-                tr.appendChild(td);
-            }
-            cal.appendChild(tr);
-        }
+                    var weeks = currentMonth.getWeeks();
+                    console.log(datesarray.length);
+                    for(var i=0; i<weeks.length; i++){
+                        var tr = document.createElement("tr");
+                        for(var j=0; j<weeks[i].getDates().length; j++){
+                            var td = document.createElement("td");
+                            var num = document.createElement("div");
+                            num.classList.add("datenum");
+                            //console.log(weeks[i].getDates()[j]);               
+
+                            num.innerHTML = weeks[i].getDates()[j].getDate();
+                            td.appendChild(num);
+                            tr.appendChild(td);
+                        }
+                        cal.appendChild(tr);
+                    }
+                            })
+                .catch(err => console.error(err));
+
+        
 
         // Change the month when the "next" button is pressed
             document.getElementById("next_month_btn").addEventListener("click", function(event){
@@ -59,7 +124,6 @@
                 currentMonth = currentMonth.prevMonth(); // Previous month would be currentMonth.prevMonth()
                 updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
             }, false);
-
 
 
 
@@ -123,6 +187,9 @@
                 return "December";
             }
         }
+
+        
     </script>
+    
 </body>
 </html>

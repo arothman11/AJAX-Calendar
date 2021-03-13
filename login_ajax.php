@@ -1,56 +1,67 @@
 <?php
+    require 'database.php';
 
-        require 'database.php';
-        session_start();
+    ini_set("session.cookie_httponly", 1);
 
-        header("Content-Type: application/json"); // Since we are sending a JSON response here (not an HTML document), set the MIME Type to application/json
+    session_start();
 
-        //Because you are posting the data via fetch(), php has to retrieve it elsewhere.
-        $json_str = file_get_contents('php://input');
-        console.log($json_str);
-        //This will store the data into an associative array
-        $json_obj = json_decode($json_str, true);
-        console.log($json_obj);
+    $previous_ua = @$_SESSION['useragent'];
+    $current_ua = $_SERVER['HTTP_USER_AGENT'];
 
-        //Variables can be accessed as such:
-        $username = $json_obj['username'];
-        console.log($username);
-        $password = $json_obj['password'];
-        console.log($password);
+    if(isset($_SESSION['useragent']) && $previous_ua !== $current_ua){
+        die("Session hijack detected");
+    }else{
+        $_SESSION['useragent'] = $current_ua;
+    }
 
-        //This is equivalent to what you previously did with $_POST['username'] and $_POST['password']
+    header("Content-Type: application/json"); // Since we are sending a JSON response here (not an HTML document), set the MIME Type to application/json
 
-        // Check to see if the username and password are valid.  (You learned how to do this in Module 3.)
+    //Because you are posting the data via fetch(), php has to retrieve it elsewhere.
+    $json_str = file_get_contents('php://input');
+    //This will store the data into an associative array
+    $json_obj = json_decode($json_str, true);
+    
 
-        // Use a prepared statement
-        $stmt = $mysqli->prepare("SELECT COUNT(*), username, hashed_password FROM users WHERE username=?");
+    //Variables can be accessed as such:
+    $username = $json_obj['username'];
+    $password = $json_obj['password'];
 
-        // Bind the parameter
-        $stmt->bind_param('s', $user);
-        $user = $_POST['username'];
-        $stmt->execute();
+       // Use a prepared statement
+    $stmt = $mysqli->prepare("SELECT COUNT(*), username, hashed_password FROM users WHERE username=?");
 
-        // Bind the results
-        $stmt->bind_result($cnt, $user_id, $pwd_hash);
-        
-        $stmt->fetch();
+       // Bind the parameter
+    $stmt->bind_param('s', $username);
+    $stmt->execute();
 
-        $pwd_guess = $_POST['password'];
-        // Compare the submitted password to the actual password hash
-        if($cnt == 1 && password_verify($pwd_guess, $pwd_hash)){
-            session_start();
-            $_SESSION['username'] = $username;
-            $_SESSION['token'] = bin2hex(openssl_random_pseudo_bytes(32)); 
+       // Bind the results
+    $stmt->bind_result($cnt, $user_id, $pwd_hash);
+       
+    $stmt->fetch();
+       
+    //This is equivalent to what you previously did with $_POST['username'] and $_POST['password']
 
-            echo json_encode(array(
-                "success" => true
-            ));
-            exit;
-        }else{
-            echo json_encode(array(
-                "success" => false,
-                "message" => "Incorrect Username or Password"
-            ));
-            exit;}
+    // Check to see if the username and password are valid.  (You learned how to do this in Module 3.)
 
+    if($cnt == 1 && password_verify($password, $pwd_hash)){
+       
+        $_SESSION['username'] = $username;
+        $_SESSION['token'] = bin2hex(openssl_random_pseudo_bytes(32)); 
+
+        echo json_encode(array(
+            "success" => true,
+            "token" => $_SESSION['token']
+        ));
+        $stmt->close();
+        exit;
+    }else{
+        echo json_encode(array(
+            "success" => false,
+            "message" => "Incorrect Username or Password"
+        ));
+        $stmt->close();
+        exit;
+    }
 ?>
+
+
+

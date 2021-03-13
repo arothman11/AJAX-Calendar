@@ -1,0 +1,25 @@
+#logout_btn{
+    display: none;
+}
+
+#event-form{
+    display: none;
+}
+
+th, td{
+    width: 150px;
+}
+
+td{
+    height: 150px;
+    border: 1px solid lightgrey;
+    margin: 0;
+    padding: 0;
+    vertical-align: text-top;
+}
+
+.datenum{
+    font-size: larger;
+}
+
+
