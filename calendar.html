@@ -4,6 +4,7 @@
     <title>Module 5 Group</title>
     <script  src="calendarfunctions.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/000bb687b7.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -21,6 +22,7 @@
         <input type="text" id="newUsername" placeholder="Username" />
         <input type="password" id="newPassword" placeholder="Password" />
         <button id="newuser_btn">Create New Account</button>
+        <p id="user_success"></p>
     </div>
 
     <button id="logout_btn">Log Out</button>
@@ -41,9 +43,6 @@
         <button name="next_month_btn" id="next_month_btn">Next Month</button>
     </div>
 
-   
-
-
     <table id="main-cal">
         <tr>
             <th>Sun</th>
@@ -56,214 +55,15 @@
         </tr>
     </table>
 
-   
-    <script>
-        // For our purposes, we can keep the current month in a variable in the global scope
-        var currentMonth = new Month(2021, 2); // March 2021
-        console.log(currentMonth);
-        var cal = document.getElementById("main-cal");
+    <div id="edit-event-form">
+        <h2>Edit Event</h2>
+        <input type="text" id="edittitle" placeholder="Event Title" />
+        <input type="date" id="editdate" placeholder="Event Date" />
+        <input type="time" id="edittime" placeholder="Event Time" />
+        <button id="submit_edited_event">Update</button>
+    </div>
 
-        document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
-       
-        for(var i=cal.childNodes.length-1; i>=2; i--){
-                cal.removeChild(cal.childNodes[i]);
-            }
-            
-        var datesarray = [];
-        var timesarray = [];
-        var titlesarray = [];
-        fetch("event_ajax.php", {
-                    method: 'POST',
-                    headers: { 'content-type': 'application/json' }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    title = data.title;
-                    datetime = data.datetime;
-                    
-                    for (i = 0; i<datetime.length; i++) {
-                        //https://stackoverflow.com/questions/3075577/convert-mysql-datetime-stamp-into-javascripts-date-format
-                         // Split timestamp into [ Y, M, D, h, m, s ]
-                        var t = datetime[i].split(/[- :]/);
-                        // Apply each element to the Date function
-                        var d = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
-                        //https://stackoverflow.com/questions/29042911/how-do-i-split-the-date-and-time-into-two-elements
-                        datesarray[i] = d.toLocaleDateString();
-                        timesarray[i]= d.toLocaleTimeString();
-                        titlesarray[i] = title[i];
-                    }
-
-                    var weeks = currentMonth.getWeeks();
-                    
-                    console.log(datesarray);
-                    console.log(timesarray);
-                    console.log(titlesarray);
-
-                    for(var i=0; i<weeks.length; i++){
-                        var tr = document.createElement("tr");
-
-                        for(var j=0; j<weeks[i].getDates().length; j++){
-                            var td = document.createElement("td");
-                            var num = document.createElement("div");
-                            num.classList.add("datenum");
-                            num.innerHTML = weeks[i].getDates()[j].getDate();
-                            td.appendChild(num);
-                            
-                            for(var k=0; k<datesarray.length; k++){
-                                if (weeks[i].getDates()[j].toLocaleDateString() == datesarray[k]){
-                                    var event_div = document.createElement("div");
-                                    event_div.classList.add("event_div");
-                                    //TITLE
-                                    var event_title = document.createElement("p");
-                                    event_title.classList.add("event_title");
-                                    event_title.innerHTML = titlesarray[k];
-                                    //TIME
-                                    var event_time = document.createElement("p");
-                                    event_time.classList.add("event_time");
-                                    event_time.innerHTML = timesarray [k];
-
-                                    event_div.appendChild(event_title);
-                                    event_div.appendChild(event_time);
-                                    td.appendChild(event_div);
-                                }
-                            }                        
-                            tr.appendChild(td);
-                        }
-                        cal.appendChild(tr);
-                    }
-                            })
-                .catch(err => console.error(err));
-        // Change the month when the "next" button is pressed
-            document.getElementById("next_month_btn").addEventListener("click", function(event){
-                currentMonth = currentMonth.nextMonth(); // Previous month would be currentMonth.prevMonth()
-                updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
-            }, false);
-
-            // Change the month when the "previous" button is pressed
-            document.getElementById("prev_month_btn").addEventListener("click", function(event){
-                currentMonth = currentMonth.prevMonth(); // Previous month would be currentMonth.prevMonth()
-                updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
-            }, false);
-
-
-
-        // This updateCalendar() function only alerts the dates in the currently specified month.  You need to write
-        // it to modify the DOM (optionally using jQuery) to display the days and weeks in the current month.
-        function updateCalendar(){
-
-            datesarray = [];
-            timesarray = [];
-            titlesarray = [];
-
-            document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
-            var cal = document.getElementById("main-cal");
-            for(var i=cal.childNodes.length-1; i>=2; i--){
-                cal.removeChild(cal.childNodes[i]);
-            }
-
-            fetch("event_ajax.php", {
-                    method: 'POST',
-                    headers: { 'content-type': 'application/json' }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    title = data.title;
-                    datetime = data.datetime;
-                    
-                    for (i = 0; i<datetime.length; i++) {
-                        //https://stackoverflow.com/questions/3075577/convert-mysql-datetime-stamp-into-javascripts-date-format
-                         // Split timestamp into [ Y, M, D, h, m, s ]
-                        var t = datetime[i].split(/[- :]/);
-                        // Apply each element to the Date function
-                        var d = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
-                        //https://stackoverflow.com/questions/29042911/how-do-i-split-the-date-and-time-into-two-elements
-                        datesarray[i] = d.toLocaleDateString();
-                        timesarray[i]= d.toLocaleTimeString();
-                        titlesarray[i] = title[i];
-                    }
-
-                    var weeks = currentMonth.getWeeks();
-
-                    for(var i=0; i<weeks.length; i++){
-                        var tr = document.createElement("tr");
-
-                        for(var j=0; j<weeks[i].getDates().length; j++){
-                            var td = document.createElement("td");
-                            var num = document.createElement("div");
-                            num.classList.add("datenum");
-                            num.innerHTML = weeks[i].getDates()[j].getDate();
-                            td.appendChild(num);
-                            
-                            for(var k=0; k<datesarray.length; k++){
-                                if (weeks[i].getDates()[j].toLocaleDateString() == datesarray[k]){
-                                    var event_div = document.createElement("div");
-                                    event_div.classList.add("event_div");
-                                    //TITLE
-                                    var event_title = document.createElement("p");
-                                    event_title.classList.add("event_title");
-                                    event_title.innerHTML = titlesarray[k];
-                                    //TIME
-                                    var event_time = document.createElement("p");
-                                    event_time.classList.add("event_time");
-                                    event_time.innerHTML = timesarray [k];
-
-                                    event_div.appendChild(event_title);
-                                    event_div.appendChild(event_time);
-                                    td.appendChild(event_div);
-                                }
-                            }
-                            tr.appendChild(td);
-                        }
-                        cal.appendChild(tr);
-                    }
-                            })
-                .catch(err => console.error(err));
-
-            
-        }
-
-        function monthName(month){
-            if(currentMonth.month == 0){
-                return "January";
-            }
-            else if(currentMonth.month == 1){
-                return "February";
-            }
-            else if(currentMonth.month == 2){
-                return "March";
-            }
-            else if(currentMonth.month == 3){
-                return "April";
-            }
-            else if(currentMonth.month == 4){
-                return "May";
-            }
-            else if(currentMonth.month == 5){
-                return "June";
-            }
-            else if(currentMonth.month == 6){
-                return "July";
-            }
-            else if(currentMonth.month == 7){
-                return "August";
-            }
-            else if(currentMonth.month == 8){
-                return "September";
-            }
-            else if(currentMonth.month == 9){
-                return "October";
-            }
-            else if(currentMonth.month == 10){
-                return "November";
-            }
-            else if(currentMonth.month == 11){
-                return "December";
-            }
-        }
-
-        
-    </script>
-     <script type="text/javascript" src="ajax.js"></script> 
+    <script type="text/javascript" src="ajax.js"></script> 
     
 </body>
 </html>

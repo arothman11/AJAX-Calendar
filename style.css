@@ -19,6 +19,15 @@
     margin: auto;
 }
 
+#edit-event-form{
+    text-align: center;
+    border: 1px solid black;
+    padding: 2px;
+    width: 50%;
+    margin: auto;
+    display: none;
+}
+
 #logout_btn{
     display: none;
 }
@@ -61,5 +70,13 @@ td{
     color: grey;
     padding: 0;
     margin:0;
+}
+
+.button_divs{
+    display: none;
+}
+
+.event_div:hover .button_divs{
+    display: block;
 }
 
