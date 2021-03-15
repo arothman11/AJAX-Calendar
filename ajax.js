@@ -53,7 +53,7 @@
                  var d = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
                  //https://stackoverflow.com/questions/29042911/how-do-i-split-the-date-and-time-into-two-elements
                  datesarray[i] = d.toLocaleDateString();
-                 timesarray[i]= d.toLocaleTimeString();
+                 timesarray[i]= d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
                  titlesarray[i] = title[i];
                  countarray[i] = count[i];
              }
@@ -95,13 +95,13 @@
                              var delete_button = document.createElement("button");
                              delete_button.classList.add("delete_event_button");
                              delete_button.innerHTML = '<i class="far fa-trash-alt"></i>';
-                
-                             
+
 
                              var edit_button = document.createElement("button");
                              edit_button.classList.add("edit_event_button");
                              edit_button.innerHTML = '<i class="far fa-edit"></i>';
-                            
+
+                             td.classList.add(datesarray[k]);
                              
                              button_divs.appendChild(delete_button);
                              button_divs.appendChild(edit_button);
@@ -130,9 +130,7 @@
             }
 
         })
-         .catch(err => console.error(err));
-
-     
+         .catch(err => console.error(err)); 
  }
 
  function monthName(month){
@@ -180,6 +178,7 @@ document.getElementById("login_btn").addEventListener("click", loginAjax, false)
 document.getElementById("logout_btn").addEventListener("click", logoutAjax, false);
 document.getElementById("submit_event").addEventListener("click", newEventAjax, false);
 document.getElementById("submit_edited_event").addEventListener("click", editEventAjax, false);
+document.getElementById("create_btn").addEventListener("click", displayCreate, false)
 
 
 var token;
@@ -286,8 +285,32 @@ function display_edit(event){
     document.getElementById("edit-event-form").style.display = "block";
     
     document.getElementById("edittitle").value = this.parentElement.parentElement.childNodes[0].innerHTML;
-    // document.getElementById("editdate").value = this.parentElement.parentElement.childNodes[1].innerHTML;
-    document.getElementById("edittime").value = this.parentElement.parentElement.childNodes[1].innerHTML;
+
+    
+    var date_mdy = this.parentElement.parentElement.parentElement.classList[0];
+    var date_split = date_mdy.split("/", 3);
+    var month = date_split[0];
+    if(month.length < 2){
+        month = "0" + month;
+    }
+    var day = date_split[1];
+    if(day.length < 2){
+        day = "0" + day;
+    }
+    var date_ymd = date_split[2] + "-" + month + "-" + day;
+    document.getElementById("editdate").value = date_ymd;
+    
+    
+    var timenums = this.parentElement.parentElement.childNodes[1].innerHTML.split(" ");
+    if(timenums[1] == "PM") {
+        var timenumshours = timenums[0].split(":");
+        var timenumshours_int = parseInt(timenumshours[0]) + 12;
+        var timenumhours_string = timenumshours_int + ":" + timenumshours[1];
+        document.getElementById("edittime").value = timenumhours_string;
+    }
+    else{
+        document.getElementById("edittime").value = timenums[0];
+    }
 }
 
 function editEventAjax(event){
@@ -295,6 +318,7 @@ function editEventAjax(event){
     const date = document.getElementById("editdate").value; 
     const time = document.getElementById("edittime").value; 
     const count = this.parentElement.parentElement.id;
+
 
     // Make a URL-encoded string for passing POST data:
     const data = { 'count': count, 'token': token};
@@ -307,7 +331,7 @@ function editEventAjax(event){
         .then(response => response.json())
         .then(data => {
             if(data.success){
-            document.getElementById(count).remove();
+                // document.getElementById()
             }
         })
         .catch(err => console.error(err));
@@ -352,14 +376,17 @@ function logoutAjax(event){
 
 function loggedIn(username){
     //add welcome screen and hide register
-    document.getElementById("welcome_user").innerHTML = "Hello " + username;
+    document.getElementById("welcome_user").innerHTML = "Logged in as " + username;
     document.getElementById("login").style.display = "none";
     document.getElementById("register").style.display = "none";
     document.getElementById("logout_btn").style.display = "block";
-    document.getElementById("event-form").style.display = "block";
-
+    document.getElementById("create_btn").style.display = "block";
     updateCalendar();
     
+}
+
+function displayCreate(){
+    document.getElementById("event-form").style.display = "block";
 }
 
 function loggedOut(){
@@ -369,6 +396,7 @@ function loggedOut(){
     document.getElementById("register").style.display = "block";
     document.getElementById("logout_btn").style.display = "none";
     document.getElementById("event-form").style.display = "none";
+    document.getElementById("create_btn").style.display = "none";
 
     updateCalendar();
     

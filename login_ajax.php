@@ -23,8 +23,8 @@
     
 
     //Variables can be accessed as such:
-    $username = $json_obj['username'];
-    $password = $json_obj['password'];
+    $username = (string) $json_obj['username'];
+    $password = (string) $json_obj['password'];
 
        // Use a prepared statement
     $stmt = $mysqli->prepare("SELECT COUNT(*), username, hashed_password FROM users WHERE username=?");
@@ -44,7 +44,7 @@
 
     if($cnt == 1 && password_verify($password, $pwd_hash)){
        
-        $_SESSION['username'] = $username;
+        $_SESSION['username'] = htmlentities($username);
         $_SESSION['token'] = bin2hex(openssl_random_pseudo_bytes(32)); 
 
         echo json_encode(array(

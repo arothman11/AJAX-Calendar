@@ -36,9 +36,9 @@
             "message" => "username session variable is not set"
         ));
     }
-    $title = htmlentities($json_obj['title']);
-    $date = htmlentities($json_obj['date']);
-    $time = htmlentities($json_obj['time']);
+    $title =  htmlentities((string)$json_obj['title']);
+    $date = htmlentities((string)$json_obj['date']);
+    $time = htmlentities((string)$json_obj['time']);
     
     preg_match_all('/\\d{2}/', $time, $time_matches);
     preg_match_all('/\\d{2,4}/', $date, $date_matches);

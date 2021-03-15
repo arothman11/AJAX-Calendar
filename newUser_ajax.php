@@ -24,7 +24,7 @@
     
 
     //Variables can be accessed as such:
-    $newUsername = $json_obj['newUsername'];
+    $newUsername = htmlentities((string)$json_obj['newUsername']);
     //checking username
     if( !preg_match('/^[\w_\-]+$/', $newUsername) ){
         echo json_encode(array(
@@ -56,7 +56,7 @@
      $stmt1->close();
     
     
-    $newPassword = $json_obj['newPassword'];
+    $newPassword = htmlentities((string)$json_obj['newPassword']);
         if( !preg_match('/^[\w_\-]+$/', $newPassword) ){
             echo json_encode(array(
                 "success" => false,

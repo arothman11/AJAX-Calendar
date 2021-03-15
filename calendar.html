@@ -5,6 +5,8 @@
     <script  src="calendarfunctions.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/000bb687b7.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -27,20 +29,30 @@
 
     <button id="logout_btn">Log Out</button>
 
-    <h1 id="welcome_user"></h1>
-    <h1 id="month_year"></h1>
+    <p id="welcome_user"></p>
+    <button id="create_btn">Create New Event</button>
+    
 
     <div id="event-form">
-        <h2>Create New Event</h2>
-        <input type="text" id="title" placeholder="Event Title" />
-        <input type="date" id="date" placeholder="Event Date" />
-        <input type="time" id="time" placeholder="Event Time" />
+        <input type="text" id="title" placeholder="Event Title" /><br>
+        <input type="date" id="date" placeholder="Event Date" /><br>
+        <input type="time" id="time" placeholder="Event Time" /><br>
         <button id="submit_event">Create</button>
     </div>
 
+    <div id="edit-event-form">
+        <h2>Edit Event</h2>
+        <input type="text" id="edittitle" placeholder="Event Title" /> <br>
+        <input type="date" id="editdate" placeholder="Event Date" /><br>
+        <input type="time" id="edittime" placeholder="Event Time" /><br>
+        <button id="submit_edited_event">Update</button>
+    </div>
+
+    <p id="month_year"></p>
+
     <div id="navbuttons">
-        <button name="prev_month_btn" id="prev_month_btn">Previous Month</button>
-        <button name="next_month_btn" id="next_month_btn">Next Month</button>
+        <button name="prev_month_btn" id="prev_month_btn"><i class="fas fa-angle-left"></i></button>
+        <button name="next_month_btn" id="next_month_btn"><i class="fas fa-angle-right"></i></button>
     </div>
 
     <table id="main-cal">
@@ -55,13 +67,7 @@
         </tr>
     </table>
 
-    <div id="edit-event-form">
-        <h2>Edit Event</h2>
-        <input type="text" id="edittitle" placeholder="Event Title" />
-        <input type="date" id="editdate" placeholder="Event Date" />
-        <input type="time" id="edittime" placeholder="Event Time" />
-        <button id="submit_edited_event">Update</button>
-    </div>
+    
 
     <script type="text/javascript" src="ajax.js"></script> 
     
