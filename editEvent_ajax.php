@@ -37,27 +37,11 @@
         ));
     }
 
-    $count = $json_obj['count'];
-
-    $stmt1 = $mysqli->prepare("delete from events where username='$username' && count='$count'");
-    if(!$stmt1){
-        echo json_encode(array(
-            "success" => false,
-            "message" => "MySQL Error"
-        ));
-    }
-
-    $stmt1->execute();
-     
-    $stmt1->close();
-
-
     $title =  htmlentities((string)$json_obj['title']);
     $date = htmlentities((string)$json_obj['date']);
     $time = htmlentities((string)$json_obj['time']);
     $tag = $json_obj['tag'];
     $allday = $json_obj['allday'];
-
     if($title == "" || $date == "" || $time == ""){
         echo json_encode(array(
             "success" => false,
@@ -65,29 +49,48 @@
         ));
     }
     else{
-        preg_match_all('/\\d{2}/', $time, $time_matches);
-        preg_match_all('/\\d{2,4}/', $date, $date_matches);
-    //php functions that convert date and time strings into datetime that mysql takes in
-    $datetime = date("Y-m-d H:i:s", mktime($time_matches[0][0], $time_matches[0][1], 0, $date_matches[0][1], $date_matches[0][2], $date_matches[0][0]));
+
+        $count = $json_obj['count'];
+
+        $stmt1 = $mysqli->prepare("delete from events where username='$username' && count='$count'");
+        if(!$stmt1){
+            echo json_encode(array(
+                "success" => false,
+                "message" => "MySQL Error"
+            ));
+        }
+
+        $stmt1->execute();
+        
+        $stmt1->close();
+
 
     
-    $stmt = $mysqli->prepare("insert into events (username, title, date, tag, allday) values (?, ?, ?, ?, ?)");
-    if(!$stmt){
-        echo json_encode(array(
-            "success" => false,
-            "message" => "Failed"
-        ));
-    }
-    else {
-        echo json_encode(array(
-            "success" => true,
-            "message" => "Successfully Created!"
-        ));
-    }
 
-    $stmt->bind_param('ssssi', $username, $title, $datetime, $tag, $allday);
-    $stmt->execute();
-    $stmt->close();
+    
+        preg_match_all('/\\d{2}/', $time, $time_matches);
+        preg_match_all('/\\d{2,4}/', $date, $date_matches);
+        //php functions that convert date and time strings into datetime that mysql takes in
+        $datetime = date("Y-m-d H:i:s", mktime($time_matches[0][0], $time_matches[0][1], 0, $date_matches[0][1], $date_matches[0][2], $date_matches[0][0]));
+
+    
+        $stmt = $mysqli->prepare("insert into events (username, title, date, tag, allday) values (?, ?, ?, ?, ?)");
+        if(!$stmt){
+            echo json_encode(array(
+                "success" => false,
+                "message" => "Failed"
+            ));
+        }
+        else {
+            echo json_encode(array(
+                "success" => true,
+                "message" => "Successfully Created!"
+            ));
+        }
+        
+        $stmt->bind_param('ssssi', $username, $title, $datetime, $tag, $allday);
+        $stmt->execute();
+        $stmt->close();
 
     }
 

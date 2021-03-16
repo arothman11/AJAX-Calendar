@@ -38,7 +38,6 @@
     $stmt->execute();
     $stmt->bind_result($user, $title, $datetime, $tag, $allday, $count);
     
-    
 
     while($stmt->fetch()){
         array_push($titles, $title);

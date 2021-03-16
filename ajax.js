@@ -65,6 +65,7 @@
                  timesarray[i]= d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
                  titlesarray[i] = title[i];
                  tagsarray[i] = tag[i];
+                 alldayarray[i] = allday[i];
                  countarray[i] = count[i];
              }
 
@@ -202,12 +203,12 @@ document.getElementById("cancel_event").addEventListener("click", cancelEvent, f
 document.getElementById("cancel_edit_event").addEventListener("click", cancelEditEvent, false);
 document.getElementById("filter-colors").addEventListener("change", filterTag, false);
 document.getElementById("year-view-button").addEventListener("click", viewYear, false);
+document.getElementById("return-to-current").addEventListener("click",returnToLast, false);
 document.getElementById("allday").addEventListener("change", allDayCheck, false);
 document.getElementById("allday_edit").addEventListener("change", allDayCheck_edit, false);
 
 //event listener for calendar buttons to go from yearly view to monthly view
 var monthBtnArray = document.getElementsByClassName("month-btn");
-console.log(monthBtnArray);
 for(var a=0; a<monthBtnArray.length; a++){
     monthBtnArray[a].addEventListener("click", viewMonth, false);
 }
@@ -281,8 +282,8 @@ function newEventAjax(event){
     const allday = document.getElementById("allday").checked;
 
     // Make a URL-encoded string for passing POST data:
-    const data = { 'title': title, 'date': date, 'time': time, 'tag': tag, 'allday': allday, 'token': token};
-
+    const data = { 'title': title, 'date': date, 'time': time, 'tag': tag,  'allday': allday, 'token': token};
+   
     fetch("newEvent_ajax.php", {
             method: 'POST',
             body: JSON.stringify(data),
@@ -297,7 +298,7 @@ function newEventAjax(event){
                 document.getElementById("title").value= "";
                 document.getElementById("date").value= "";
                 document.getElementById("time").value= "";
-                document.getElementById("allday").checked= false;
+                // document.getElementById("allday").checked= false;
                 document.getElementById("event_success").innerHTML = "";
                 document.getElementById("event-form").style.display="none";
                 updateCalendar();
@@ -333,7 +334,18 @@ function display_edit(event){
     document.getElementById("edit-event-form").style.display = "block";
     document.getElementById("edit-event-form").classList.add(this.parentElement.parentElement.id);
     document.getElementById("edittitle").value = this.parentElement.parentElement.childNodes[0].innerHTML;
+    document.getElementById("editcolors").value = this.parentElement.parentElement.classList[1];
     
+    if(this.parentElement.parentElement.childNodes[1].innerHTML == "All Day"){
+       document.getElementById("allday_edit").checked= true;
+       document.getElementById("edittime").value = "00:00";
+       document.getElementById("edittime").style.display = "none";
+    }
+    else{
+        document.getElementById("allday_edit").checked= false;
+        document.getElementById("edittime").style.display = "block";
+    }
+
     var date_mdy = this.parentElement.parentElement.parentElement.classList[0];
     var date_split = date_mdy.split("/", 3);
     var month = date_split[0];
@@ -349,24 +361,29 @@ function display_edit(event){
     
     
     var timenums = this.parentElement.parentElement.childNodes[1].innerHTML.split(" ");
-    if(timenums[1] == "PM") {
-        if(timenums[0].split(":")[0] == "12"){
-            document.getElementById("edittime").value = "12:" + timenums[0].split(":")[1];
+
+    
+    if(this.parentElement.parentElement.childNodes[1].innerHTML != "All Day"){
+        if(timenums[1] == "PM") {
+            if(timenums[0].split(":")[0] == "12"){
+                document.getElementById("edittime").value = "12:" + timenums[0].split(":")[1];
+            }
+            else{
+                var timenumshours = timenums[0].split(":");
+                var timenumshours_int = parseInt(timenumshours[0]) + 12;
+                var timenumhours_string = timenumshours_int + ":" + timenumshours[1];
+                document.getElementById("edittime").value = timenumhours_string;
+            }
+            
+        }
+        else if(timenums[0].split(":")[0] == "12"){
+            document.getElementById("edittime").value = "00:" + timenums[0].split(":")[1];
         }
         else{
-            var timenumshours = timenums[0].split(":");
-            var timenumshours_int = parseInt(timenumshours[0]) + 12;
-            var timenumhours_string = timenumshours_int + ":" + timenumshours[1];
-            document.getElementById("edittime").value = timenumhours_string;
+            document.getElementById("edittime").value = timenums[0];
         }
-        
     }
-    else if(timenums[0].split(":")[0] == "12"){
-        document.getElementById("edittime").value = "00:" + timenums[0].split(":")[1];
-    }
-    else{
-        document.getElementById("edittime").value = timenums[0];
-    }
+   
 }
 
 function editEventAjax(event){
@@ -378,8 +395,8 @@ function editEventAjax(event){
     const count = this.parentElement.classList[0];
 
     // Make a URL-encoded string for passing POST data:
-    const data = { 'count': count, 'token': token, 'title': title, 'date': date, 'time': time, 'tag': tag, 'allday': allday};
-
+    const data = { 'count': count, 'token': token, 'title': title, 'date': date, 'time': time, 'tag': tag,'allday': allday};
+  
     fetch("editEvent_ajax.php", {
             method: 'POST',
             body: JSON.stringify(data),
@@ -394,7 +411,7 @@ function editEventAjax(event){
                 document.getElementById("edittitle").value = "";
                 document.getElementById("editdate").value = "";
                 document.getElementById("edittime").value = "";
-                document.getElementById("allday_edit").checked = false;
+                // document.getElementById("allday_edit").checked = false;
                 this.parentElement.classList.remove(count);
             }
             else{
@@ -588,16 +605,16 @@ document.getElementById("prev_btn").addEventListener("click", function(event){
 
 function updateYear(){
     for (var m=0; m<12; m++) {
-        currentMonth = new Month(currentYear, m);
+        var currentMO = new Month(currentYear, m);
         
-        document.getElementById("year").innerHTML = currentMonth.year;
+        document.getElementById("year").innerHTML = currentMO.year;
         var cal = document.getElementById(m);
     
         for(var i=cal.childNodes.length-1; i>=2; i--){
             cal.removeChild(cal.childNodes[i]);
         }
 
-        var weeks = currentMonth.getWeeks();
+        var weeks = currentMO.getWeeks();
         for(var i=0; i<weeks.length; i++){
             var tr = document.createElement("tr");
             for(var j=0; j<weeks[i].getDates().length; j++){
@@ -619,6 +636,13 @@ function viewYear() {
 
 function viewMonth() {
     currentMonth = new Month(currentYear, parseInt(this.childNodes[3].id));
+    document.getElementById("regular-div").style.display = "block"; 
+    document.getElementById("year-div").style.display = "none";
+    document.getElementById("year-view-button").style.display = "block";
+    updateCalendar();
+}
+
+function returnToLast() {
     document.getElementById("regular-div").style.display = "block"; 
     document.getElementById("year-div").style.display = "none";
     document.getElementById("year-view-button").style.display = "block";

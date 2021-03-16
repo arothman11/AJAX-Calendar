@@ -69,7 +69,7 @@
                 "message" => "Successfully Created!"
             ));
         }
-
+       
         $stmt->bind_param('ssssi', $username, $title, $datetime, $tag, $allday);
         $stmt->execute();
         $stmt->close();
