@@ -264,10 +264,10 @@ function newUserAjax(event) {
             document.getElementById("newUsername").value= "";
             document.getElementById("newPassword").value= "";
             if(data.success) {
-                document.getElementById("user_success").innerHTML =  "User Successfully Created";
+                document.getElementById("user_success").innerHTML = data.message;
             }
             else{
-                document.getElementById("user_success").innerHTML =  "User Not Created. Please Try Again.";
+                document.getElementById("user_success").innerHTML = data.message;
             }
         })
         .catch(err => console.error(err));
@@ -639,6 +639,8 @@ function viewYear() {
     document.getElementById("year-div").style.display = "block";
     document.getElementById("regular-div").style.display = "none"; 
     document.getElementById("year-view-button").style.display = "none";
+    document.getElementById("event-form").style.display = "none";
+    document.getElementById("edit-event-form").style.display = "none";
     updateYear();
 }
 

@@ -48,7 +48,7 @@
     if($cnt == 1){
         echo json_encode(array(
             "success" => false,
-            "message" => "Username already taken Please try again"
+            "message" => "Username already taken. Please try again"
         ));
         exit;
      }
