@@ -331,6 +331,7 @@ function deleteEventAjax(event){
 }
 
 function display_edit(event){
+    document.getElementById("edit_event_success").innerHTML = "";
     document.getElementById("create_btn").style.display = "none";
     document.getElementById("event-form").style.display = "none";
     document.getElementById("edit-event-form").style.display = "block";
@@ -431,6 +432,7 @@ function cancelEvent(){
     document.getElementById("title").value= "";
     document.getElementById("date").value= "";
     document.getElementById("time").value= "";
+    document.getElementById("time").style.display = "initial";
     document.getElementById("colors").value = "blue";
     document.getElementById("allday").checked = false;
     document.getElementById("event_success").innerHTML = "";
