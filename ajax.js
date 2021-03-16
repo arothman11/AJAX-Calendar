@@ -298,7 +298,9 @@ function newEventAjax(event){
                 document.getElementById("title").value= "";
                 document.getElementById("date").value= "";
                 document.getElementById("time").value= "";
-                // document.getElementById("allday").checked= false;
+                document.getElementById("allday").checked= false;
+                document.getElementById("time").style.display = "initial";
+                document.getElementById("colors").value = "blue";
                 document.getElementById("event_success").innerHTML = "";
                 document.getElementById("event-form").style.display="none";
                 updateCalendar();
@@ -411,8 +413,11 @@ function editEventAjax(event){
                 document.getElementById("edittitle").value = "";
                 document.getElementById("editdate").value = "";
                 document.getElementById("edittime").value = "";
-                // document.getElementById("allday_edit").checked = false;
+                document.getElementById("allday_edit").checked = false;
+                document.getElementById("edittime").style.display = "initial";
+                document.getElementById("editcolors").value = "blue";
                 this.parentElement.classList.remove(count);
+                document.getElementById("edit_event_success").innerHTML = "";
             }
             else{
                 document.getElementById("edit_event_success").innerHTML = data.message;
@@ -426,6 +431,7 @@ function cancelEvent(){
     document.getElementById("title").value= "";
     document.getElementById("date").value= "";
     document.getElementById("time").value= "";
+    document.getElementById("colors").value = "blue";
     document.getElementById("allday").checked = false;
     document.getElementById("event_success").innerHTML = "";
 }
@@ -436,8 +442,10 @@ function cancelEditEvent(){
     document.getElementById("edittitle").value = "";
     document.getElementById("editdate").value = "";
     document.getElementById("edittime").value = "";
+    document.getElementById("editcolors").value = "blue";
     document.getElementById("allday_edit").checked = false;
     document.getElementById("create_btn").style.display = "block";
+    document.getElementById("edit_event_success").innerHTML = "";
 }
 
 
