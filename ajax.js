@@ -1,6 +1,10 @@
- // For our purposes, we can keep the current month in a variable in the global scope
+  // For our purposes, we can keep the current month in a variable in the global scope
  var currentMonth = new Month(2021, 2); // March 2021
  var cal = document.getElementById("main-cal");
+
+ var currentYear = 2021;
+
+
 
  document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
 
@@ -16,6 +20,7 @@
          currentMonth = currentMonth.prevMonth(); // Previous month would be currentMonth.prevMonth()
          updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
      }, false);
+
 
 
  // This updateCalendar() function only alerts the dates in the currently specified month.  You need to write
@@ -188,6 +193,14 @@ document.getElementById("create_btn").addEventListener("click", displayCreate, f
 document.getElementById("cancel_event").addEventListener("click", cancelEvent, false);
 document.getElementById("cancel_edit_event").addEventListener("click", cancelEditEvent, false);
 document.getElementById("filter-colors").addEventListener("change", filterTag, false);
+document.getElementById("year-view-button").addEventListener("click", viewYear, false);
+
+//event listener for calendar buttons to go from yearly view to monthly view
+var monthBtnArray = document.getElementsByClassName("month-btn");
+console.log(monthBtnArray);
+for(var a=0; a<monthBtnArray.length; a++){
+    monthBtnArray[a].addEventListener("click", viewMonth, false);
+}
 
 
 var token;
@@ -437,6 +450,8 @@ function loggedIn(username){
     document.getElementById("register").style.display = "none";
     document.getElementById("logout_btn").style.display = "block";
     document.getElementById("create_btn").style.display = "block";
+    document.getElementById("filter-color").style.display = "block";
+
     updateCalendar();
     
 }
@@ -453,6 +468,7 @@ function loggedOut(){
     document.getElementById("logout_btn").style.display = "none";
     document.getElementById("event-form").style.display = "none";
     document.getElementById("create_btn").style.display = "none";
+    document.getElementById("filter-color").style.display = "none";
 
     updateCalendar();
     
@@ -539,5 +555,56 @@ function filterTag(){
             green[g].style.display = "block";
         }
     }
+}
 
+// Change the year when the "next" button is pressed
+document.getElementById("next_btn").addEventListener("click", function(event){
+    currentYear++; 
+    updateYear();
+}, false);
+
+// Change the year when the "previous" button is pressed
+document.getElementById("prev_btn").addEventListener("click", function(event){
+    currentYear--; 
+    updateYear();
+}, false);
+
+
+function updateYear(){
+    for (var m=0; m<12; m++) {
+        currentMonth = new Month(currentYear, m);
+        
+        document.getElementById("year").innerHTML = currentMonth.year;
+        var cal = document.getElementById(m);
+    
+        for(var i=cal.childNodes.length-1; i>=2; i--){
+            cal.removeChild(cal.childNodes[i]);
+        }
+
+        var weeks = currentMonth.getWeeks();
+        for(var i=0; i<weeks.length; i++){
+            var tr = document.createElement("tr");
+            for(var j=0; j<weeks[i].getDates().length; j++){
+                var td = document.createElement("td");
+                td.innerHTML = weeks[i].getDates()[j].getDate();
+                tr.appendChild(td);
+            }
+            cal.appendChild(tr);
+        }
+    }
+}
+
+function viewYear() {
+    document.getElementById("year-div").style.display = "block";
+    document.getElementById("regular-div").style.display = "none"; 
+    document.getElementById("year-view-button").style.display = "none";
+    updateYear();
+}
+
+function viewMonth() {
+    currentMonth = new Month(currentYear, parseInt(this.childNodes[3].id));
+    document.getElementById("regular-div").style.display = "block"; 
+    document.getElementById("year-div").style.display = "none";
+    document.getElementById("year-view-button").style.display = "block";
+    updateCalendar();
 }

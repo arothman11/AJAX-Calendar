@@ -32,79 +32,295 @@
 
     <p id="welcome_user"></p>
 
-    <button id="create_btn">Create New Event</button>
-    <div id="event-form">
-        <input type="text" id="title" placeholder="Event Title" /><br>
-        <input type="date" id="date" placeholder="Event Date" /><br>
-        <input type="time" id="time" placeholder="Event Time" /><br>
+    <button id="year-view-button">Yearly View</button>
+    
+    <div id="regular-div">
 
-        <!-- //dropdown for color tag 
-        //https://www.w3schools.com/html/tryit.asp?filename=tryhtml_elem_select_pre -->
-        <label for="colors">Choose a tag color:</label>
-          <select id="colors" name="colors">
-            <option id="blue" value="blue" selected>Blue</option>
-            <option id="pink" value="pink">Pink</option>
-            <option id="yellow" value="yellow">Yellow</option>
-            <option id="green" value="green">Green</option>
-          </select> <br><br>
+        <button id="create_btn">Create New Event</button>
+        <div id="event-form">
+            <input type="text" id="title" placeholder="Event Title" /><br>
+            <input type="date" id="date" placeholder="Event Date" /><br>
+            <input type="time" id="time" placeholder="Event Time" /><br>
 
-        <button id="submit_event">Create</button>
-        <button id="cancel_event">Cancel</button>
-        <p id="event_success"></p>
+            <!-- //dropdown for color tag 
+            //https://www.w3schools.com/html/tryit.asp?filename=tryhtml_elem_select_pre -->
+            <label for="colors">Choose a tag color:</label>
+              <select id="colors" name="colors">
+                <option id="blue" value="blue" selected>Blue</option>
+                <option id="pink" value="pink">Pink</option>
+                <option id="yellow" value="yellow">Yellow</option>
+                <option id="green" value="green">Green</option>
+              </select> <br><br>
+
+            <button id="submit_event">Create</button>
+            <button id="cancel_event">Cancel</button>
+            <p id="event_success"></p>
+        </div>
+
+        <div id="edit-event-form">
+            <h2>Edit Event</h2>
+            <input type="text" id="edittitle" placeholder="Event Title" /> <br>
+            <input type="date" id="editdate" placeholder="Event Date" /><br>
+            <input type="time" id="edittime" placeholder="Event Time" /><br>
+
+            <!-- //dropdown for color tag 
+            //https://www.w3schools.com/html/tryit.asp?filename=tryhtml_elem_select_pre -->
+            <label for="editcolors">Choose a tag color:</label>
+              <select id="editcolors" name="editcolors">
+                <option id="editblue" value="blue" selected>Blue</option>
+                <option id="editpink" value="pink">Pink</option>
+                <option id="edityellow" value="yellow">Yellow</option>
+                <option id="editgreen" value="green">Green</option>
+              </select><br><br>
+
+            <button id="submit_edited_event">Update</button>
+            <button id="cancel_edit_event">Cancel</button>
+            <p id="edit_event_success"></p>
+        </div>
+
+
+
+        <p id="month_year"></p>
+
+        <div id="navbuttons">
+            <button name="prev_month_btn" id="prev_month_btn"><i class="fas fa-angle-left"></i></button>
+            <button name="next_month_btn" id="next_month_btn"><i class="fas fa-angle-right"></i></button>
+        </div>
+
+        <div id="filter-color">
+            <label for="filter-colors">Filter by tag:</label>
+                  <select id="filter-colors" name="filter-colors">
+                    <option id="filter-none" value="none" selected>Display All</option>
+                    <option id="filter-blue" value="blue">Blue</option>
+                    <option id="filter-pink" value="pink">Pink</option>
+                    <option id="filter-yellow" value="yellow">Yellow</option>
+                    <option id="filter-green" value="green">Green</option>
+                  </select>
+        </div>
+
+        <table id="main-cal">
+            <tr>
+                <th>Sun</th>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+            </tr>
+        </table>
     </div>
 
-    <div id="edit-event-form">
-        <h2>Edit Event</h2>
-        <input type="text" id="edittitle" placeholder="Event Title" /> <br>
-        <input type="date" id="editdate" placeholder="Event Date" /><br>
-        <input type="time" id="edittime" placeholder="Event Time" /><br>
+    <div id="year-div">
+        <h1 id="year"></h1>
 
-        <!-- //dropdown for color tag 
-        //https://www.w3schools.com/html/tryit.asp?filename=tryhtml_elem_select_pre -->
-        <label for="editcolors">Choose a tag color:</label>
-          <select id="editcolors" name="editcolors">
-            <option id="editblue" value="blue" selected>Blue</option>
-            <option id="editpink" value="pink">Pink</option>
-            <option id="edityellow" value="yellow">Yellow</option>
-            <option id="editgreen" value="green">Green</option>
-          </select><br><br>
+        <div id="yearnavbuttons">
+            <button name="prev_btn" id="prev_btn"><i class="fas fa-angle-left"></i></button>
+            <button name="next_btn" id="next_btn"><i class="fas fa-angle-right"></i></button>
+        </div>
 
-        <button id="submit_edited_event">Update</button>
-        <button id="cancel_edit_event">Cancel</button>
-        <p id="edit_event_success"></p>
+        <table id="yearly-view">
+            <tr>
+                <td>
+                    <button id="january" class="month-btn">
+                        <h2 class="month-name">January</h2>
+                        <table id="0">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="february" class="month-btn">
+                        <h2 class="month-name">February</h2>
+                        <table id="1">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="march" class="month-btn">
+                        <h2 class="month-name">March</h2>
+                        <table id="2">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="april" class="month-btn">
+                        <h2 class="month-name">April</h2>
+                        <table id="3">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="may-btn" class="month-btn">
+                        <h2 class="month-name">May</h2>
+                        <table id="4">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="june" class="month-btn">
+                        <h2 class="month-name">June</h2>
+                        <table id="5">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="july" class="month-btn">
+                        <h2 class="month-name">July</h2>
+                        <table id="6">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="august" class="month-btn">
+                        <h2 class="month-name">August</h2>
+                        <table id="7">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="september" class="month-btn">
+                        <h2 class="month-name">September</h2>
+                        <table id="8">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="october" class="month-btn">
+                        <h2 class="month-name">October</h2>
+                        <table id="9">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="november" class="month-btn">
+                        <h2 class="month-name">November</h2>
+                        <table id="10">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+                <td>
+                    <button id="december" class="month-btn">
+                        <h2 class="month-name">December</h2>
+                        <table id="11">
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
+            </tr>
+            
+        </table>
     </div>
-
-
-
-    <p id="month_year"></p>
-
-    <div id="navbuttons">
-        <button name="prev_month_btn" id="prev_month_btn"><i class="fas fa-angle-left"></i></button>
-        <button name="next_month_btn" id="next_month_btn"><i class="fas fa-angle-right"></i></button>
-    </div>
-
-    <div id="filter-color">
-        <label for="filter-colors">Filter by tag:</label>
-              <select id="filter-colors" name="filter-colors">
-                <option id="filter-none" value="none" selected>Display All</option>
-                <option id="filter-blue" value="blue">Blue</option>
-                <option id="filter-pink" value="pink">Pink</option>
-                <option id="filter-yellow" value="yellow">Yellow</option>
-                <option id="filter-green" value="green">Green</option>
-              </select>
-    </div>
-
-    <table id="main-cal">
-        <tr>
-            <th>Sun</th>
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>
-        </tr>
-    </table>
 
     
 
