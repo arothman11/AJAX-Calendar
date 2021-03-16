@@ -38,6 +38,15 @@
     }
 
     $title =  htmlentities((string)$json_obj['title']);
+    //https://www.regexpal.com/93913
+    if( !preg_match('/[a-zA-Z0-9\s()]/', $title) ){
+        echo json_encode(array(
+            "success" => false,
+            "message" => "Invalid title. Title should only include word characters."
+        ));
+        exit;
+    }
+
     $date = htmlentities((string)$json_obj['date']);
     $time = htmlentities((string)$json_obj['time']);
     $tag = $json_obj['tag'];
