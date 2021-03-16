@@ -24,6 +24,7 @@
      datesarray = [];
      timesarray = [];
      titlesarray = [];
+     tagsarray = [];
      countarray = [];
 
      document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
@@ -43,18 +44,21 @@
          .then(data => {
              title = data.title;
              datetime = data.datetime;
+             tag = data.tag;
              count = data.count;
-             
+
              for (var i = 0; i<datetime.length; i++) {
                  //https://stackoverflow.com/questions/3075577/convert-mysql-datetime-stamp-into-javascripts-date-format
                   // Split timestamp into [ Y, M, D, h, m, s ]
                  var t = datetime[i].split(/[- :]/);
                  // Apply each element to the Date function
-                 var d = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
+                 var d = new Date(t[0], t[1] - 1, t[2], t[3] || 0, t[4] || 0, t[5] || 0);
+
                  //https://stackoverflow.com/questions/29042911/how-do-i-split-the-date-and-time-into-two-elements
                  datesarray[i] = d.toLocaleDateString();
                  timesarray[i]= d.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
                  titlesarray[i] = title[i];
+                 tagsarray[i] = tag[i];
                  countarray[i] = count[i];
              }
 
@@ -77,8 +81,10 @@
 
                      for(var k=0; k<datesarray.length; k++){
                          if (weeks[i].getDates()[j].toLocaleDateString() == datesarray[k]){
+
                              var event_div = document.createElement("div");
                              event_div.classList.add("event_div");
+                             event_div.classList.add(tagsarray[k]);
                              event_div.setAttribute("id", countarray[k]);
                              //TITLE
                              var event_title = document.createElement("p");
@@ -115,8 +121,6 @@
                      tr.appendChild(td);
                  }
                  cal.appendChild(tr);
-
-                 
              }
 
             var delete_event_array = document.getElementsByClassName("delete_event_button");
@@ -128,6 +132,8 @@
             for(var n=0; n<edit_event_array.length; n++){
                 edit_event_array[n].addEventListener("click", display_edit, false);
             }
+
+            filterTag();
 
         })
          .catch(err => console.error(err)); 
@@ -178,7 +184,10 @@ document.getElementById("login_btn").addEventListener("click", loginAjax, false)
 document.getElementById("logout_btn").addEventListener("click", logoutAjax, false);
 document.getElementById("submit_event").addEventListener("click", newEventAjax, false);
 document.getElementById("submit_edited_event").addEventListener("click", editEventAjax, false);
-document.getElementById("create_btn").addEventListener("click", displayCreate, false)
+document.getElementById("create_btn").addEventListener("click", displayCreate, false);
+document.getElementById("cancel_event").addEventListener("click", cancelEvent, false);
+document.getElementById("cancel_edit_event").addEventListener("click", cancelEditEvent, false);
+document.getElementById("filter-colors").addEventListener("change", filterTag, false);
 
 
 var token;
@@ -204,6 +213,10 @@ function loginAjax(event) {
             if(data.success) {
                 loggedIn(username);
                 token = data.token;
+                document.getElementById("login_failure").innerHTML = "";
+            }
+            else{
+                document.getElementById("login_failure").innerHTML = data.message;
             }
         })
         .catch(err => console.error(err));
@@ -241,9 +254,10 @@ function newEventAjax(event){
     const title = document.getElementById("title").value;
     const date = document.getElementById("date").value; 
     const time = document.getElementById("time").value; 
+    const tag = document.getElementById("colors").value;
 
     // Make a URL-encoded string for passing POST data:
-    const data = { 'title': title, 'date': date, 'time': time, 'token': token};
+    const data = { 'title': title, 'date': date, 'time': time, 'tag': tag, 'token': token};
 
     fetch("newEvent_ajax.php", {
             method: 'POST',
@@ -252,10 +266,17 @@ function newEventAjax(event){
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById("title").value= "";
-            document.getElementById("date").value= "";
-            document.getElementById("time").value= "";
-            updateCalendar();
+            if(!data.success){
+                document.getElementById("event_success").innerHTML = data.message;
+            }
+            else{
+                document.getElementById("title").value= "";
+                document.getElementById("date").value= "";
+                document.getElementById("time").value= "";
+                document.getElementById("event_success").innerHTML = "";
+                document.getElementById("event-form").style.display="none";
+                updateCalendar();
+            }
         })
         .catch(err => console.error(err));
 }
@@ -282,10 +303,11 @@ function deleteEventAjax(event){
 }
 
 function display_edit(event){
+    document.getElementById("create_btn").style.display = "none";
+    document.getElementById("event-form").style.display = "none";
     document.getElementById("edit-event-form").style.display = "block";
-    
+    document.getElementById("edit-event-form").classList.add(this.parentElement.parentElement.id);
     document.getElementById("edittitle").value = this.parentElement.parentElement.childNodes[0].innerHTML;
-
     
     var date_mdy = this.parentElement.parentElement.parentElement.classList[0];
     var date_split = date_mdy.split("/", 3);
@@ -303,10 +325,19 @@ function display_edit(event){
     
     var timenums = this.parentElement.parentElement.childNodes[1].innerHTML.split(" ");
     if(timenums[1] == "PM") {
-        var timenumshours = timenums[0].split(":");
-        var timenumshours_int = parseInt(timenumshours[0]) + 12;
-        var timenumhours_string = timenumshours_int + ":" + timenumshours[1];
-        document.getElementById("edittime").value = timenumhours_string;
+        if(timenums[0].split(":")[0] == "12"){
+            document.getElementById("edittime").value = "12:" + timenums[0].split(":")[1];
+        }
+        else{
+            var timenumshours = timenums[0].split(":");
+            var timenumshours_int = parseInt(timenumshours[0]) + 12;
+            var timenumhours_string = timenumshours_int + ":" + timenumshours[1];
+            document.getElementById("edittime").value = timenumhours_string;
+        }
+        
+    }
+    else if(timenums[0].split(":")[0] == "12"){
+        document.getElementById("edittime").value = "00:" + timenums[0].split(":")[1];
     }
     else{
         document.getElementById("edittime").value = timenums[0];
@@ -317,13 +348,13 @@ function editEventAjax(event){
     const title = document.getElementById("edittitle").value;
     const date = document.getElementById("editdate").value; 
     const time = document.getElementById("edittime").value; 
-    const count = this.parentElement.parentElement.id;
-
+    const tag = document.getElementById("editcolors").value;
+    const count = this.parentElement.classList[0];
 
     // Make a URL-encoded string for passing POST data:
-    const data = { 'count': count, 'token': token};
+    const data = { 'count': count, 'token': token, 'title': title, 'date': date, 'time': time, 'tag': tag};
 
-    fetch("deleteEvent_ajax.php", {
+    fetch("editEvent_ajax.php", {
             method: 'POST',
             body: JSON.stringify(data),
             headers: { 'content-type': 'application/json' }
@@ -331,11 +362,36 @@ function editEventAjax(event){
         .then(response => response.json())
         .then(data => {
             if(data.success){
-                // document.getElementById()
+                updateCalendar();
+                document.getElementById("edit-event-form").style.display = "none";
+                document.getElementById("create_btn").style.display = "block";
+                document.getElementById("edittitle").value = "";
+                document.getElementById("editdate").value = "";
+                document.getElementById("edittime").value = "";
+                this.parentElement.classList.remove(count);
+            }
+            else{
+                document.getElementById("edit_event_success").innerHTML = data.message;
             }
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error(err));    
+}
 
+function cancelEvent(){
+    document.getElementById("event-form").style.display = "none";
+    document.getElementById("title").value= "";
+    document.getElementById("date").value= "";
+    document.getElementById("time").value= "";
+    document.getElementById("event_success").innerHTML = "";
+}
+
+function cancelEditEvent(){
+    document.getElementById("edit-event-form").style.display = "none";
+    this.parentElement.classList.remove(this.parentElement.classList[0]);
+    document.getElementById("edittitle").value = "";
+    document.getElementById("editdate").value = "";
+    document.getElementById("edittime").value = "";
+    document.getElementById("create_btn").style.display = "block";
 }
 
 
@@ -400,4 +456,88 @@ function loggedOut(){
 
     updateCalendar();
     
+}
+
+function filterTag(){
+    var blue = document.getElementsByClassName("blue");
+    var pink = document.getElementsByClassName("pink");
+    var yellow = document.getElementsByClassName("yellow");
+    var green = document.getElementsByClassName("green");
+    var value = document.getElementById("filter-colors").value;
+
+    if(value == "blue"){
+        for(var b=0; b<blue.length; b++){
+            blue[b].style.display = "block";
+        }
+        for(var p=0; p<pink.length; p++){
+            pink[p].style.display = "none";
+        }
+        for(var y=0; y<yellow.length; y++){
+            yellow[y].style.display = "none";
+        }
+        for(var g=0; g<green.length; g++){
+            green[g].style.display = "none";
+        }
+    }
+
+    if(value == "pink"){
+        for(var b=0; b<blue.length; b++){
+            blue[b].style.display = "none";
+        }
+        for(var p=0; p<pink.length; p++){
+            pink[p].style.display = "block";
+        }
+        for(var y=0; y<yellow.length; y++){
+            yellow[y].style.display = "none";
+        }
+        for(var g=0; g<green.length; g++){
+            green[g].style.display = "none";
+        }
+    }
+
+    if(value == "yellow"){
+        for(var b=0; b<blue.length; b++){
+            blue[b].style.display = "none";
+        }
+        for(var p=0; p<pink.length; p++){
+            pink[p].style.display = "none";
+        }
+        for(var y=0; y<yellow.length; y++){
+            yellow[y].style.display = "block";
+        }
+        for(var g=0; g<green.length; g++){
+            green[g].style.display = "none";
+        }
+    }
+
+    if(value == "green"){
+        for(var b=0; b<blue.length; b++){
+            blue[b].style.display = "none";
+        }
+        for(var p=0; p<pink.length; p++){
+            pink[p].style.display = "none";
+        }
+        for(var y=0; y<yellow.length; y++){
+            yellow[y].style.display = "none";
+        }
+        for(var g=0; g<green.length; g++){
+            green[g].style.display = "block";
+        }
+    }
+
+    if(value == "none"){
+        for(var b=0; b<blue.length; b++){
+            blue[b].style.display = "block";
+        }
+        for(var p=0; p<pink.length; p++){
+            pink[p].style.display = "block";
+        }
+        for(var y=0; y<yellow.length; y++){
+            yellow[y].style.display = "block";
+        }
+        for(var g=0; g<green.length; g++){
+            green[g].style.display = "block";
+        }
+    }
+
 }

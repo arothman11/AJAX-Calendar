@@ -25,39 +25,34 @@
     if(isset($_SESSION['username'])){
         $username = $_SESSION["username"];
     }
-    else{
-        // echo json_encode(array(
-        //     "success" => false,
-        //     "message" => "username session variable is not set"
-        // ));
-    }
    
     $titles = array();
     $datetimes = array();
+    $tags = array();
     $counts = array();
 
 
-    $stmt = $mysqli->prepare("select * from events where username='$username'");
+    $stmt = $mysqli->prepare("select * from events where username='$username' ORDER BY date");
     
     $stmt->execute();
-    $stmt->bind_result($user, $title, $datetime, $count);
+    $stmt->bind_result($user, $title, $datetime, $tag, $count);
     
     
 
     while($stmt->fetch()){
         array_push($titles, $title);
         array_push($datetimes, $datetime);
+        array_push($tags, $tag);
         array_push($counts, $count);
     }
 
     echo json_encode(array(
         "title" => $titles,
         "datetime" => $datetimes,
+        "tag" => $tags,
         "count" => $counts
     ));
     
     $stmt->close();
-
-   
 
 ?>

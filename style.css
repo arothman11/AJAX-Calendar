@@ -53,6 +53,7 @@ button:hover {
   }
 
 #event-form{
+    display: none;
     padding: 2px;
     border-radius: 3px;
     padding-bottom: 5px;
@@ -73,18 +74,23 @@ button:hover {
 
 
 #edit-event-form{
-    text-align: center;
-    border: 1px solid black;
-    border-radius: 3px;
-    padding: 2px;
-    width: 30%;
-    margin: auto;
     display: none;
-    z-index: 1;
-    position: absolute;
-    transform: translate(850px, -30px);
+    padding: 2px;
+    border-radius: 3px;
+    padding-bottom: 5px;
+    padding-left: 12px;
     background-color: rgb(136, 157, 227);
-    
+    width: 15%;
+}
+
+#edit-event-form input, button{
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+#edit-event-form input, button{
+    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 #edit-event-form h2{
@@ -94,15 +100,9 @@ button:hover {
     margin: 1px;
 }
 
-
-
 #logout_btn{
     display: none;
     float:right;
-}
-
-#event-form{
-    display: none;
 }
 
 th, td{
@@ -131,7 +131,6 @@ td{
 .event_div{
     margin: 2px;
     padding: 2px;
-    background-color: lightblue;
     border-radius: 3px;
 }
 
@@ -170,7 +169,7 @@ input{
 }
 
 .delete_event_button, .edit_event_button{
-    background-color: lightblue;
+    background-color: inherit;
     border-color: grey;
     padding: 2px 5px;
     margin: 1px;
@@ -181,3 +180,26 @@ input{
     background-color: grey;
     color: white;
   }
+
+.event_div.blue{
+    background-color: lightblue;
+}
+
+.event_div.pink{
+    background-color: rgb(254, 214, 220);
+}
+
+.event_div.yellow{
+    background-color: rgb(255, 255, 182);
+}
+
+.event_div.green{
+    background-color: rgb(202, 255, 202);
+}
+
+#filter-color{
+    text-align: center;
+    margin-top: 5px;
+    margin-right: 0px;
+    padding-right: 0px;
+}
