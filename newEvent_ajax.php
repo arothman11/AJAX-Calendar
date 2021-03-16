@@ -36,10 +36,12 @@
             "message" => "username session variable is not set"
         ));
     }
+
     $title =  htmlentities((string)$json_obj['title']);
     $date = htmlentities((string)$json_obj['date']);
     $time = htmlentities((string)$json_obj['time']);
-    $tag = htmlentities((string)$json_obj['tag']);
+    $tag = $json_obj['tag'];
+    $allday = $json_obj['allday'];
 
     if($title == "" || $date == "" || $time == ""){
         echo json_encode(array(
@@ -50,27 +52,27 @@
     else{
         preg_match_all('/\\d{2}/', $time, $time_matches);
         preg_match_all('/\\d{2,4}/', $date, $date_matches);
-    //php functions that convert date and time strings into datetime that mysql takes in
-    $datetime = date("Y-m-d H:i:s", mktime($time_matches[0][0], $time_matches[0][1], 0, $date_matches[0][1], $date_matches[0][2], $date_matches[0][0]));
+        //php functions that convert date and time strings into datetime that mysql takes in
+        $datetime = date("Y-m-d H:i:s", mktime($time_matches[0][0], $time_matches[0][1], 0, $date_matches[0][1], $date_matches[0][2], $date_matches[0][0]));
 
-    
-    $stmt = $mysqli->prepare("insert into events (username, title, date, tag) values (?, ?, ?, ?)");
-    if(!$stmt){
-        echo json_encode(array(
-            "success" => false,
-            "message" => "Failed"
-        ));
-    }
-    else {
-        echo json_encode(array(
-            "success" => true,
-            "message" => "Successfully Created!"
-        ));
-    }
+        
+        $stmt = $mysqli->prepare("insert into events (username, title, date, tag, allday) values (?, ?, ?, ?, ?)");
+        if(!$stmt){
+            echo json_encode(array(
+                "success" => false,
+                "message" => "Failed"
+            ));
+        }
+        else {
+            echo json_encode(array(
+                "success" => true,
+                "message" => "Successfully Created!"
+            ));
+        }
 
-    $stmt->bind_param('ssss', $username, $title, $datetime, $tag);
-    $stmt->execute();
-    $stmt->close();
+        $stmt->bind_param('ssssi', $username, $title, $datetime, $tag, $allday);
+        $stmt->execute();
+        $stmt->close();
 
     }
     

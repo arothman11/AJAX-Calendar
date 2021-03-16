@@ -30,13 +30,13 @@
      timesarray = [];
      titlesarray = [];
      tagsarray = [];
+     alldayarray = [];
      countarray = [];
 
      document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
      var cal = document.getElementById("main-cal");
 
      for(var i=cal.childNodes.length-1; i>=2; i--){
-         
          cal.removeChild(cal.childNodes[i]);
      }
     
@@ -50,6 +50,7 @@
              title = data.title;
              datetime = data.datetime;
              tag = data.tag;
+             allday = data.allday;
              count = data.count;
 
              for (var i = 0; i<datetime.length; i++) {
@@ -90,6 +91,7 @@
                              var event_div = document.createElement("div");
                              event_div.classList.add("event_div");
                              event_div.classList.add(tagsarray[k]);
+                             
                              event_div.setAttribute("id", countarray[k]);
                              //TITLE
                              var event_title = document.createElement("p");
@@ -98,8 +100,14 @@
                              //TIME
                              var event_time = document.createElement("p");
                              event_time.classList.add("event_time");
-                             event_time.innerHTML = timesarray [k];
-
+                             if (alldayarray[k]) {
+                                event_time.innerHTML = "All Day";
+                             }
+                             else {
+                                event_time.innerHTML = timesarray[k];
+                             }
+                            
+                            //buttons for edit and delete
                              var button_divs = document.createElement("div");
                              button_divs.classList.add("button_divs");
 
@@ -194,6 +202,8 @@ document.getElementById("cancel_event").addEventListener("click", cancelEvent, f
 document.getElementById("cancel_edit_event").addEventListener("click", cancelEditEvent, false);
 document.getElementById("filter-colors").addEventListener("change", filterTag, false);
 document.getElementById("year-view-button").addEventListener("click", viewYear, false);
+document.getElementById("allday").addEventListener("change", allDayCheck, false);
+document.getElementById("allday_edit").addEventListener("change", allDayCheck_edit, false);
 
 //event listener for calendar buttons to go from yearly view to monthly view
 var monthBtnArray = document.getElementsByClassName("month-btn");
@@ -268,9 +278,10 @@ function newEventAjax(event){
     const date = document.getElementById("date").value; 
     const time = document.getElementById("time").value; 
     const tag = document.getElementById("colors").value;
+    const allday = document.getElementById("allday").checked;
 
     // Make a URL-encoded string for passing POST data:
-    const data = { 'title': title, 'date': date, 'time': time, 'tag': tag, 'token': token};
+    const data = { 'title': title, 'date': date, 'time': time, 'tag': tag, 'allday': allday, 'token': token};
 
     fetch("newEvent_ajax.php", {
             method: 'POST',
@@ -286,6 +297,7 @@ function newEventAjax(event){
                 document.getElementById("title").value= "";
                 document.getElementById("date").value= "";
                 document.getElementById("time").value= "";
+                document.getElementById("allday").checked= false;
                 document.getElementById("event_success").innerHTML = "";
                 document.getElementById("event-form").style.display="none";
                 updateCalendar();
@@ -362,10 +374,11 @@ function editEventAjax(event){
     const date = document.getElementById("editdate").value; 
     const time = document.getElementById("edittime").value; 
     const tag = document.getElementById("editcolors").value;
+    const allday = document.getElementById("allday_edit").checked;
     const count = this.parentElement.classList[0];
 
     // Make a URL-encoded string for passing POST data:
-    const data = { 'count': count, 'token': token, 'title': title, 'date': date, 'time': time, 'tag': tag};
+    const data = { 'count': count, 'token': token, 'title': title, 'date': date, 'time': time, 'tag': tag, 'allday': allday};
 
     fetch("editEvent_ajax.php", {
             method: 'POST',
@@ -381,6 +394,7 @@ function editEventAjax(event){
                 document.getElementById("edittitle").value = "";
                 document.getElementById("editdate").value = "";
                 document.getElementById("edittime").value = "";
+                document.getElementById("allday_edit").checked = false;
                 this.parentElement.classList.remove(count);
             }
             else{
@@ -395,6 +409,7 @@ function cancelEvent(){
     document.getElementById("title").value= "";
     document.getElementById("date").value= "";
     document.getElementById("time").value= "";
+    document.getElementById("allday").checked = false;
     document.getElementById("event_success").innerHTML = "";
 }
 
@@ -404,6 +419,7 @@ function cancelEditEvent(){
     document.getElementById("edittitle").value = "";
     document.getElementById("editdate").value = "";
     document.getElementById("edittime").value = "";
+    document.getElementById("allday_edit").checked = false;
     document.getElementById("create_btn").style.display = "block";
 }
 
@@ -607,4 +623,26 @@ function viewMonth() {
     document.getElementById("year-div").style.display = "none";
     document.getElementById("year-view-button").style.display = "block";
     updateCalendar();
+}
+
+function allDayCheck() {
+    if (this.checked) {
+        document.getElementById("time").value = "00:00";
+        document.getElementById("time").style.display = "none";
+    }
+    else {
+        document.getElementById("time").value = "";
+        document.getElementById("time").style.display = "initial";
+    }
+}
+
+function allDayCheck_edit() {
+    if (this.checked) {
+        document.getElementById("edittime").value = "00:00";
+        document.getElementById("edittime").style.display = "none";
+    }
+    else {
+        document.getElementById("edittime").value = "";
+        document.getElementById("edittime").style.display = "initial";
+    }
 }

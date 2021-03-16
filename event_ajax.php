@@ -29,13 +29,14 @@
     $titles = array();
     $datetimes = array();
     $tags = array();
+    $alldays = array();
     $counts = array();
 
 
     $stmt = $mysqli->prepare("select * from events where username='$username' ORDER BY date");
     
     $stmt->execute();
-    $stmt->bind_result($user, $title, $datetime, $tag, $count);
+    $stmt->bind_result($user, $title, $datetime, $tag, $allday, $count);
     
     
 
@@ -43,6 +44,7 @@
         array_push($titles, $title);
         array_push($datetimes, $datetime);
         array_push($tags, $tag);
+        array_push($alldays, $allday);
         array_push($counts, $count);
     }
 
@@ -50,6 +52,7 @@
         "title" => $titles,
         "datetime" => $datetimes,
         "tag" => $tags,
+        "allday" => $alldays,
         "count" => $counts
     ));
     

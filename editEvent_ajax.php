@@ -56,6 +56,7 @@
     $date = htmlentities((string)$json_obj['date']);
     $time = htmlentities((string)$json_obj['time']);
     $tag = $json_obj['tag'];
+    $allday = $json_obj['allday'];
 
     if($title == "" || $date == "" || $time == ""){
         echo json_encode(array(
@@ -70,7 +71,7 @@
     $datetime = date("Y-m-d H:i:s", mktime($time_matches[0][0], $time_matches[0][1], 0, $date_matches[0][1], $date_matches[0][2], $date_matches[0][0]));
 
     
-    $stmt = $mysqli->prepare("insert into events (username, title, date, tag) values (?, ?, ?, ?)");
+    $stmt = $mysqli->prepare("insert into events (username, title, date, tag, allday) values (?, ?, ?, ?, ?)");
     if(!$stmt){
         echo json_encode(array(
             "success" => false,
@@ -84,7 +85,7 @@
         ));
     }
 
-    $stmt->bind_param('ssss', $username, $title, $datetime, $tag);
+    $stmt->bind_param('ssssi', $username, $title, $datetime, $tag, $allday);
     $stmt->execute();
     $stmt->close();
 
