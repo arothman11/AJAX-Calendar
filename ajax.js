@@ -1,30 +1,21 @@
-  // For our purposes, we can keep the current month in a variable in the global scope
- var currentMonth = new Month(2021, 2); // March 2021
+ var currentMonth = new Month(2021, 2); // Default to March 2021
  var cal = document.getElementById("main-cal");
-
  var currentYear = 2021;
-
-
-
  document.getElementById("month_year").innerHTML = monthName(currentMonth.month) + " " + currentMonth.year;
 
+// Change the month when the "next" button is pressed
+document.getElementById("next_month_btn").addEventListener("click", function(event){
+    currentMonth = currentMonth.nextMonth();
+    updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
+}, false);
 
- // Change the month when the "next" button is pressed
-     document.getElementById("next_month_btn").addEventListener("click", function(event){
-         currentMonth = currentMonth.nextMonth(); // Previous month would be currentMonth.prevMonth()
-         updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
-     }, false);
+// Change the month when the "previous" button is pressed
+document.getElementById("prev_month_btn").addEventListener("click", function(event){
+    currentMonth = currentMonth.prevMonth();
+    updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
+}, false);
 
-     // Change the month when the "previous" button is pressed
-     document.getElementById("prev_month_btn").addEventListener("click", function(event){
-         currentMonth = currentMonth.prevMonth(); // Previous month would be currentMonth.prevMonth()
-         updateCalendar(); // Whenever the month is updated, we'll need to re-render the calendar in HTML
-     }, false);
-
-
-
- // This updateCalendar() function only alerts the dates in the currently specified month.  You need to write
- // it to modify the DOM (optionally using jQuery) to display the days and weeks in the current month.
+//Called everytime new 
  function updateCalendar(){
      datesarray = [];
      timesarray = [];
@@ -108,7 +99,7 @@
                                 event_time.innerHTML = timesarray[k];
                              }
                             
-                            //buttons for edit and delete
+                            //buttons for edit and delete and share
                              var button_divs = document.createElement("div");
                              button_divs.classList.add("button_divs");
 
@@ -120,15 +111,48 @@
                              var edit_button = document.createElement("button");
                              edit_button.classList.add("edit_event_button");
                              edit_button.innerHTML = '<i class="far fa-edit"></i>';
+                            
+                             var share_button = document.createElement("button");
+                             share_button.classList.add("share_event_button");
+                             share_button.innerHTML = '<i class="fas fa-external-link-alt"></i>';
+
+                             //shareing form with input, share button, and cancel button
+                             var share_div = document.createElement("div");
+                             share_div.classList.add("share_div");
+
+                             var share_form = document.createElement("input");
+                             share_form.placeholder = 'Other Username';
+                             share_form.classList.add("share_form");
+
+                             var share_form_button = document.createElement("button");
+                             share_form_button.innerHTML = 'Share';
+                             share_form_button.classList.add("share_form_button");
+                             share_form_button.addEventListener("click", shareForm, false);
+
+                             var cancel_share_form_button = document.createElement("button");
+                             cancel_share_form_button.innerHTML = 'Cancel';
+                             cancel_share_form_button.classList.add("cancel_share_form_button");
+                             cancel_share_form_button.addEventListener("click", cancelShareForm, false);
+                             
+                             var share_div_failure = document.createElement("p");
+                             share_div_failure.classList.add("share_div_failure");
+
 
                              td.classList.add(datesarray[k]);
                              
                              button_divs.appendChild(delete_button);
                              button_divs.appendChild(edit_button);
+                             button_divs.appendChild(share_button);
+
+                             share_div.appendChild(share_form);
+                             share_div.appendChild(share_form_button);
+                             share_div.appendChild(cancel_share_form_button);
+                             share_div.appendChild(share_div_failure);
 
                              event_div.appendChild(event_title);
                              event_div.appendChild(event_time);
                              event_div.appendChild(button_divs);
+                             event_div.appendChild(share_div);
                              td.appendChild(event_div);
                          }
                      }
@@ -136,6 +160,8 @@
                  }
                  cal.appendChild(tr);
              }
+             
+
 
             var delete_event_array = document.getElementsByClassName("delete_event_button");
             for(var m=0; m<delete_event_array.length; m++){
@@ -145,6 +171,11 @@
             var edit_event_array = document.getElementsByClassName("edit_event_button");
             for(var n=0; n<edit_event_array.length; n++){
                 edit_event_array[n].addEventListener("click", display_edit, false);
+            }
+
+            var share_event_array = document.getElementsByClassName("share_event_button");
+            for(var l=0; l<share_event_array.length; l++){
+                share_event_array[l].addEventListener("click", displayShareForm, false);
             }
 
             filterTag();
@@ -308,7 +339,6 @@ function newEventAjax(event){
         })
         .catch(err => console.error(err));
 }
-
 
 function deleteEventAjax(event){
     const count = this.parentElement.parentElement.id;
@@ -681,4 +711,90 @@ function allDayCheck_edit() {
         document.getElementById("edittime").value = "";
         document.getElementById("edittime").style.display = "initial";
     }
+}
+
+function displayShareForm(){
+    this.parentElement.nextElementSibling.style.display = "block";
+    this.parentElement.nextElementSibling.childNodes[0].style.display = "block";
+    this.parentElement.nextElementSibling.childNodes[1].style.display = "inline";
+    this.parentElement.nextElementSibling.childNodes[2].style.display = "inline";
+    this.parentElement.nextElementSibling.childNodes[2].innerHTML = "Cancel";
+    this.parentElement.nextElementSibling.childNodes[3].style.display = "none";
+}
+
+function cancelShareForm(){
+    this.parentElement.style.display = "none";
+    this.parentElement.childNodes[0].value = "";
+}
+
+function shareForm(){
+    var other_user = this.parentElement.childNodes[0].value;
+    const title = this.parentElement.parentElement.childNodes[0].innerHTML;
+    var date = "";
+    var time = "";
+    const tag = this.parentElement.parentElement.classList[1];
+    var allday = false;
+    var ptag = this.parentElement.childNodes[3];
+
+
+    var date_mdy = this.parentElement.parentElement.parentElement.classList[0];
+    var date_split = date_mdy.split("/", 3);
+    var month = date_split[0];
+    if(month.length < 2){
+        month = "0" + month;
+    }
+    var day = date_split[1];
+    if(day.length < 2){
+        day = "0" + day;
+    }
+    var date_ymd = date_split[2] + "-" + month + "-" + day;
+    date = date_ymd;
+    
+    var timenums = this.parentElement.parentElement.childNodes[1].innerHTML.split(" ");
+
+    if(this.parentElement.parentElement.childNodes[1].innerHTML != "All Day"){
+        if(timenums[1] == "PM") {
+            if(timenums[0].split(":")[0] == "12"){
+                document.getElementById("edittime").value = "12:" + timenums[0].split(":")[1];
+            }
+            else{
+                var timenumshours = timenums[0].split(":");
+                var timenumshours_int = parseInt(timenumshours[0]) + 12;
+                var timenumhours_string = timenumshours_int + ":" + timenumshours[1];
+                time = timenumhours_string;
+            }
+            
+        }
+        else if(timenums[0].split(":")[0] == "12"){
+            time = "00:" + timenums[0].split(":")[1];
+        }
+        else{
+            time = timenums[0];
+        }
+    
+    const data = { 'title': title, 'date': date, 'time': time, 'tag': tag,  'allday': allday, 'token': token, 'other_user': other_user};
+   
+    fetch("shareEvent_ajax.php", {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'content-type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success){
+                ptag.style.display = "block";
+                ptag.innerHTML = "Successfully Shared!";
+                this.parentElement.childNodes[0].style.display = "none";
+                this.parentElement.childNodes[1].style.display = "none";
+                this.parentElement.childNodes[2].innerHTML = "Close";
+            }
+            else{
+                ptag.style.display = "block";
+                ptag.innerHTML = data.message;
+                this.parentElement.childNodes[0].value = "";
+                // updateCalendar();
+            }
+        })
+        .catch(err => console.error(err));
+}
 }

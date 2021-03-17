@@ -164,11 +164,15 @@ input{
     padding: 5px 10px;
 }
 
-.delete_event_button{
+.share_div{
+    display: none;
+}
+
+.delete_event_button, .share_event_button{
     margin-right: 2px;
 }
 
-.delete_event_button, .edit_event_button{
+.delete_event_button, .edit_event_button, .share_event_button{
     background-color: inherit;
     border-color: grey;
     padding: 2px 5px;
@@ -176,7 +180,7 @@ input{
     color: grey;
 }
 
-.delete_event_button:hover, .edit_event_button:hover {
+.delete_event_button:hover, .edit_event_button:hover, .share_event_button:hover {
     background-color: grey;
     color: white;
   }
@@ -226,4 +230,25 @@ input{
 }
 #yearly-view button:hover {
     height: 260px;
+}
+button.share_form_button, button.cancel_share_form_button{
+    margin: 2px;
+    padding: 2px;
+    font-size: smaller;
+    text-align: center;
+    background-color: inherit;
+}
+
+
+button.share_form_button:hover, button.cancel_share_form_button:hover{
+    background-color: black;
+    color: white;
+}
+
+.share_div_failure{
+    font-size: 10px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    color: rgb(255, 0, 0);
+    font-style: italic;
 }
